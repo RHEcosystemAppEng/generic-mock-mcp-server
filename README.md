@@ -30,16 +30,10 @@ AI skills depend on MCP servers for tool access. Evaluating skills end-to-end re
 ├── tests/                      # pytest: engine, configs, LLM
 │   ├── schema.json             # Test fixture schema
 │   └── fixtures.json           # Test fixture responses
-└── configs/                    # Pre-built MCP configs
-    ├── openshift-mcp-server/
-    │   ├── schema.json
-    │   ├── fixtures-oomkilled.json
-    │   └── USAGE.md            # Deploy & curl test guide
-    └── lightspeed-mcp/
+└── configs/                    # Example config(s); real MCP configs are supplied at deploy time
+    └── example/
         ├── schema.json
-        ├── fixtures-cve-impact.json
-        ├── fixtures-cve-validation.json
-        └── USAGE.md            # Deploy & curl test guide
+        └── fixtures-basic-flow.json
 ```
 
 ## Prerequisites
@@ -93,19 +87,19 @@ CLI flags override environment variables. **CLI defaults** apply when you run `p
 
 ```bash
 # Static strategy (returns outputExample from schema)
-python src/server.py --schema configs/lightspeed-mcp/schema.json --strategy static
+python src/server.py --schema configs/example/schema.json --strategy static
 
 # Fixtures strategy (returns ordered responses)
 python src/server.py \
-  --schema configs/lightspeed-mcp/schema.json \
+  --schema configs/example/schema.json \
   --strategy fixtures \
-  --fixtures configs/lightspeed-mcp/fixtures-cve-validation.json
+  --fixtures configs/example/fixtures-basic-flow.json
 
 # HTTP transport (exposes JSON-RPC at POST /mcp)
 python src/server.py \
-  --schema configs/lightspeed-mcp/schema.json \
+  --schema configs/example/schema.json \
   --strategy fixtures \
-  --fixtures configs/lightspeed-mcp/fixtures-cve-impact.json \
+  --fixtures configs/example/fixtures-basic-flow.json \
   --transport streamable-http --port 8080
 ```
 
@@ -202,8 +196,6 @@ curl -s -X POST http://127.0.0.1:8080/mcp \
   }'
 ```
 
-For MCP-specific curl test guides with complete step-by-step commands, see the `USAGE.md` inside each `configs/<mcp-name>/` directory.
-
 ## Running tests
 
 ```bash
@@ -225,10 +217,11 @@ Follow **[SCHEMA.md](SCHEMA.md)** for required fields, `outputExample` rules, an
 
 ## Available configs
 
-| Config | MCP server | Fixtures | Test guide |
-|---|---|---|---|
-| `configs/openshift-mcp-server/` | openshift-mcp-server | OOMKilled troubleshooting | [USAGE.md](configs/openshift-mcp-server/USAGE.md) |
-| `configs/lightspeed-mcp/` | lightspeed-mcp | CVE Impact Analysis, CVE Validation | [USAGE.md](configs/lightspeed-mcp/USAGE.md) |
+| Config | Purpose |
+|---|---|
+| `configs/example/` | Generic, non-MCP-specific example illustrating the schema/fixtures contract |
+
+Real MCP configs (`schema.json` / `fixtures-<scenario>.json` per MCP server) are owned by their respective MCP developers and supplied at deploy time rather than shipped in this repo.
 
 ## License
 
