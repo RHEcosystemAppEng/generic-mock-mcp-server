@@ -54,16 +54,10 @@ generic-mock-mcp-server/
 ├── tests/                 # pytest: engine, configs, LLM fake client
 │   ├── schema.json        # Test fixture schema (4 tools)
 │   └── fixtures.json      # Test fixture responses
-└── configs/               # Pre-built configs per MCP server
-    ├── openshift-mcp-server/
-    │   ├── schema.json              # 20 tools (pods, nodes, resources, config)
-    │   ├── fixtures-oomkilled.json  # OOMKilled troubleshooting scenario
-    │   └── USAGE.md                 # Deploy & curl test guide
-    └── lightspeed-mcp/
-        ├── schema.json                    # Lightspeed MCP tool catalog
-        ├── fixtures-cve-impact.json       # CVE Impact Analysis scenario (7 steps)
-        ├── fixtures-cve-validation.json   # CVE Validation scenario (3 steps)
-        └── USAGE.md                       # Deploy & curl test guide
+└── configs/               # Example config; real MCP configs are supplied at deploy time
+    └── example/
+        ├── schema.json              # Generic, non-MCP-specific example
+        └── fixtures-basic-flow.json
 ```
 
 ## Schema and fixtures
@@ -97,8 +91,8 @@ podman build -t mock-mcp-server:latest -f Containerfile .
 
 # Run with a config
 podman run --rm -d -p 8080:8080 \
-  -v ./configs/openshift-mcp-server/schema.json:/config/schema.json:ro,Z \
-  -v ./configs/openshift-mcp-server/fixtures-oomkilled.json:/config/fixtures.json:ro,Z \
+  -v ./configs/example/schema.json:/config/schema.json:ro,Z \
+  -v ./configs/example/fixtures-basic-flow.json:/config/fixtures.json:ro,Z \
   -e MOCK_STRATEGY=fixtures \
   mock-mcp-server:latest
 ```

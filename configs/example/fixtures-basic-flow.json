@@ -1,0 +1,29 @@
+{
+  "sequence": [
+    {
+      "tool": "list_items",
+      "input": {},
+      "output": {
+        "items": [
+          {"id": "item-001", "name": "First Item", "status": "active"}
+        ],
+        "total": 1
+      }
+    },
+    {
+      "tool": "create_item",
+      "input": {"name": "New Item"},
+      "output": {"id": "item-002", "name": "New Item", "status": "pending"}
+    },
+    {
+      "tool": "get_item",
+      "input": {"item_id": "item-002"},
+      "output": {
+        "id": "item-002",
+        "name": "New Item",
+        "status": "pending",
+        "description": "Newly created example item."
+      }
+    }
+  ]
+}
