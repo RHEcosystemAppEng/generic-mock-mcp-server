@@ -215,13 +215,27 @@ pytest
 
 Follow **[SCHEMA.md](SCHEMA.md)** for required fields, `outputExample` rules, and the author checklists.
 
-1. Create `configs/<mcp-name>/schema.json` with all tools from the real MCP server.
+1. Create `configs/<mcp-name>/schema.json` with all tools from the real MCP server — or generate a first draft with `scripts/extract_mcp_schema.py` (see below).
 2. Optionally create `configs/<mcp-name>/fixtures-<scenario>.json` with a coherent multi-step scenario (one file per scenario).
 3. Optionally create `configs/<mcp-name>/USAGE.md` with curl commands that exercise the fixtures.
 4. Smoke test:
    ```bash
    python src/server.py --schema configs/<mcp-name>/schema.json --strategy static
    ```
+
+### Generating schema.json from a live MCP server
+
+`scripts/extract_mcp_schema.py` connects to a real MCP server, calls the standard `initialize` and `tools/list` methods, and writes out a `schema.json` with each tool's `name`, `description`, and `inputSchema`.
+
+```bash
+# Streamable HTTP transport
+python scripts/extract_mcp_schema.py --url http://127.0.0.1:8080/mcp --output configs/<mcp-name>/schema.json
+
+# stdio transport
+python scripts/extract_mcp_schema.py --command "./some-mcp-server --read-only" --output configs/<mcp-name>/schema.json
+```
+
+The MCP protocol's `tools/list` has no concept of an example response, so `outputSchema`/`outputExample` are only populated for servers that declare `outputSchema` themselves — otherwise the script leaves them empty and warns on stderr. Fill those in by hand per **[SCHEMA.md](SCHEMA.md)**.
 
 ## Available configs
 
