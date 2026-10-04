@@ -95,6 +95,9 @@ pytest
 # Build image
 podman build -t mock-mcp-server:latest -f Containerfile .
 
+# Or pull the published image and use it in place of mock-mcp-server:latest
+podman pull quay.io/ecosystem-appeng/generic-mock-mcp-server:latest
+
 # Run with a config
 podman run --rm -d -p 8080:8080 \
   -v ./configs/openshift-mcp-server/schema.json:/config/schema.json:ro,Z \

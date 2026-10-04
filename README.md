@@ -111,11 +111,19 @@ python src/server.py \
 
 ### Run in container
 
-Build:
+Build locally:
 
 ```bash
 podman build -t mock-mcp-server:latest -f Containerfile .
 ```
+
+Or pull the published image:
+
+```bash
+podman pull quay.io/ecosystem-appeng/generic-mock-mcp-server:latest
+```
+
+The image has no schema baked in. Mount a `schema.json` and, for the fixtures strategy, the scenario file. The commands below use `mock-mcp-server:latest`. If you pulled from Quay, use `quay.io/ecosystem-appeng/generic-mock-mcp-server:latest` instead.
 
 HTTP transport (container default):
 
