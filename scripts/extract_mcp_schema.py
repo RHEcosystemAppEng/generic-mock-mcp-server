@@ -90,6 +90,7 @@ def main(argv: list[str] | None = None) -> int:
         schema = asyncio.run(extract_via_stdio(args.command))
 
     output_path = Path(args.output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(schema, indent=2) + "\n")
 
     empty_output_schemas = sum(1 for t in schema["tools"] if not t["outputSchema"])
