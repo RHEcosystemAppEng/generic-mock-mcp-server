@@ -10,13 +10,21 @@ How to deploy the mock server for the OpenShift MCP Server and test it with curl
 
 Schema `outputExample` values describe a healthy cluster. The OOMKilled story is only in the fixtures file above; static strategy will not look like a broken cluster.
 
-## 1. Build the container image
+## 1. Get the container image
 
-From the repo root:
+Build locally, from the repo root:
 
 ```bash
 podman build -t mock-mcp-server:latest -f Containerfile .
 ```
+
+Or pull the published image:
+
+```bash
+podman pull quay.io/ecosystem-appeng/generic-mock-mcp-server:latest
+```
+
+The run command below uses `mock-mcp-server:latest`. If you pulled from Quay, use `quay.io/ecosystem-appeng/generic-mock-mcp-server:latest` instead.
 
 ## 2. Run the mock server
 

@@ -9,13 +9,21 @@ How to deploy the mock server for the Red Hat Lightspeed MCP and test it with Cl
 | `fixtures-cve-validation.json` | `/cve-validation` | 3 | Validate CVE-2026-31337 (remediable) and CVE-2026-99999 (not remediable) |
 | `fixtures-cve-impact.json` | `/cve-impact` | 7 | Full CVE Impact Analysis: discover, drill-down, classify hosts, dashboard |
 
-## 1. Build the container image
+## 1. Get the container image
 
-From the repo root:
+Build locally, from the repo root:
 
 ```bash
 podman build -t mock-mcp-server:latest -f Containerfile .
 ```
+
+Or pull the published image:
+
+```bash
+podman pull quay.io/ecosystem-appeng/generic-mock-mcp-server:latest
+```
+
+The run commands below use `mock-mcp-server:latest`. If you pulled from Quay, use `quay.io/ecosystem-appeng/generic-mock-mcp-server:latest` instead.
 
 ## 2. Run the mock server
 
