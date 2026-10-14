@@ -49,6 +49,8 @@ generic-mock-mcp-server/
 ├── Containerfile          # UBI 10 minimal + Python 3.12, non-root
 ├── requirements.txt       # mcp SDK, anthropic (for LLM strategy)
 ├── requirements-dev.txt   # pytest
+├── scripts/
+│   └── extract_mcp_schema.py  # Generate schema.json from a live MCP server (HTTP or stdio)
 ├── src/
 │   └── server.py          # Mock server (strategies, dynamic tool registration)
 ├── tests/                 # pytest: engine, configs, LLM fake client
@@ -123,3 +125,4 @@ Follow **[SCHEMA.md](SCHEMA.md)** (required fields, `outputExample` rules, check
 - **Fixtures for certification, LLM for exploration**: Fixtures give deterministic pass/fail; LLM gives zero-maintenance coherence. Choose based on evaluation goal.
 - **LLM strategy reuses the pipeline's LLM**: No extra infrastructure — the mock calls the same LLM endpoint the evaluation pipeline already provisions.
 - **Generic server, config-driven**: One image, any MCP. The schema defines the tools; the fixtures define the responses.
+- **Advertised inputSchema is verbatim from schema.json**: `build_server` overwrites FastMCP's auto-derived schema with the source `inputSchema` after registering each tool, so `tools/list` matches the real MCP byte-for-byte (description, pattern, default, etc. survive). Otherwise the LLM under evaluation would see a degraded schema and could behave differently than against the real MCP.

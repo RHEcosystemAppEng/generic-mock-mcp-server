@@ -311,9 +311,21 @@ def build_server(schema: dict, strategy: ResponseStrategy) -> FastMCP:
     mcp = FastMCP(server_name)
 
     for tool_def in schema.get("tools", []):
+        tool_name = tool_def["name"]
         handler = create_tool_handler(tool_def, strategy)
         mcp.tool()(handler)
-        logger.info("Registered tool: %s", tool_def["name"])
+
+        # FastMCP derives the advertised inputSchema from the handler's Python
+        # signature, which loses per-property description/pattern/default and
+        # adds synthetic fields (title, anyOf-null wrappers) not present in the
+        # source schema. Overwrite it with the original inputSchema verbatim so
+        # tools/list matches the real MCP server byte-for-byte; the handler's
+        # signature still drives argument dispatch and is unaffected.
+        input_schema = tool_def.get("inputSchema")
+        if input_schema:
+            mcp._tool_manager.get_tool(tool_name).parameters = input_schema
+
+        logger.info("Registered tool: %s", tool_name)
 
     logger.info(
         "Mock MCP server '%s' ready with %d tools (strategy: %s)",

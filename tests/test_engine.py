@@ -142,6 +142,22 @@ def test_server_registers_example_tools(example_schema):
     assert {"name", "version", "single_node"} <= set(props)
 
 
+def test_registered_tool_input_schema_matches_source_verbatim(example_schema):
+    """The advertised inputSchema must match schema.json byte-for-byte.
+
+    FastMCP derives a schema from the handler's Python signature by default,
+    which drops per-property description/pattern/default and adds synthetic
+    fields (title, anyOf-null wrappers). A real MCP client compares this
+    schema to decide what to send, so any drift here is visible to the LLM
+    being evaluated.
+    """
+    mcp = build_server(example_schema, StaticStrategy())
+    tools = {tool.name: tool for tool in asyncio.run(mcp.list_tools())}
+
+    for tool_def in example_schema["tools"]:
+        assert tools[tool_def["name"]].input_schema == tool_def["inputSchema"]
+
+
 def test_tool_execution_returns_fixture_response(example_schema, fixtures_path, create_sno_args):
     mcp = build_server(example_schema, FixturesStrategy(fixtures_path))
 
