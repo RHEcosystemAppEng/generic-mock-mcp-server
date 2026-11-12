@@ -1,6 +1,5 @@
-"""Smoke tests for shipped configs and the Lightspeed CVE skill contract."""
+"""Smoke tests for the shipped example config."""
 
-import json
 from pathlib import Path
 
 import pytest
@@ -11,14 +10,9 @@ CONFIGS = Path(__file__).resolve().parent.parent / "configs"
 
 SHIPPED = [
     pytest.param(
-        CONFIGS / "lightspeed-mcp",
-        ("fixtures-cve-validation.json", "fixtures-cve-impact.json"),
-        id="lightspeed-mcp",
-    ),
-    pytest.param(
-        CONFIGS / "openshift-mcp-server",
-        ("fixtures-oomkilled.json",),
-        id="openshift-mcp-server",
+        CONFIGS / "example",
+        ("fixtures-basic-flow.json",),
+        id="example",
     ),
 ]
 
@@ -55,44 +49,3 @@ def test_shipped_fixtures_match_schema(config_dir: Path, fixture_files: tuple[st
                 assert key in input_props, (
                     f"{fixtures_name}: {tool_name} input {key!r} not in schema"
                 )
-
-
-def test_get_cve_skill_fields_are_in_schema_and_example():
-    schema = load_schema(CONFIGS / "lightspeed-mcp" / "schema.json")
-    tools = {tool["name"]: tool for tool in schema["tools"]}
-
-    get_cve = tools["vulnerability__get_cve"]
-    assert "cve_id" in get_cve["inputSchema"]["properties"]
-    assert "cve" not in get_cve["inputSchema"]["properties"]
-
-    attrs = get_cve["outputSchema"]["properties"]["attributes"]["properties"]
-    example = get_cve["outputExample"]["attributes"]
-    for key in ("advisory_available", "remediation", "advisories_list", "rules"):
-        assert key in attrs
-        assert key in example
-    assert attrs["remediation"]["type"] == "integer"
-    assert example["remediation"] == 2
-
-    get_systems = tools["vulnerability__get_cve_systems"]
-    assert "cve" in get_systems["inputSchema"]["properties"]
-    assert "cve_id" not in get_systems["inputSchema"]["properties"]
-
-
-OOM_STORY_MARKERS = ("OOMKilled", "OOMKilling", "CrashLoopBackOff", "oom_linux")
-
-
-def test_openshift_schema_examples_are_healthy():
-    schema = load_schema(CONFIGS / "openshift-mcp-server" / "schema.json")
-    for tool in schema["tools"]:
-        blob = json.dumps(tool.get("outputExample"))
-        for marker in OOM_STORY_MARKERS:
-            assert marker not in blob, (
-                f"{tool['name']} outputExample still contains {marker!r}"
-            )
-
-
-def test_oomkilled_story_lives_in_fixtures_only():
-    fixtures = load_fixtures(CONFIGS / "openshift-mcp-server" / "fixtures-oomkilled.json")
-    blob = json.dumps(fixtures)
-    assert "OOMKilled" in blob
-    assert "CrashLoopBackOff" in blob

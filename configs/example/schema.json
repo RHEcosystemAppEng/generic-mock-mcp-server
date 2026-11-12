@@ -1,0 +1,90 @@
+{
+  "name": "example-service",
+  "version": "1.0.0",
+  "description": "Generic example MCP schema, used to illustrate the schema.json contract. Not tied to any real MCP server.",
+  "tools": [
+    {
+      "name": "list_items",
+      "description": "List all items known to the example service.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {"type": "string", "description": "Unique item identifier"},
+                "name": {"type": "string", "description": "Human-readable item name"},
+                "status": {"type": "string", "enum": ["pending", "active", "archived"]}
+              }
+            }
+          },
+          "total": {"type": "integer", "description": "Total number of items"}
+        }
+      },
+      "outputExample": {
+        "items": [
+          {"id": "item-001", "name": "First Item", "status": "active"},
+          {"id": "item-002", "name": "Second Item", "status": "pending"}
+        ],
+        "total": 2
+      }
+    },
+    {
+      "name": "get_item",
+      "description": "Get details for a single item by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "item_id": {"type": "string", "description": "ID of the item to retrieve"}
+        },
+        "required": ["item_id"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "status": {"type": "string", "enum": ["pending", "active", "archived"]},
+          "description": {"type": "string"}
+        }
+      },
+      "outputExample": {
+        "id": "item-001",
+        "name": "First Item",
+        "status": "active",
+        "description": "An example item returned by the mock server."
+      }
+    },
+    {
+      "name": "create_item",
+      "description": "Create a new item in the example service.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string", "description": "Name for the new item"}
+        },
+        "required": ["name"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "status": {"type": "string", "enum": ["pending", "active", "archived"]}
+        }
+      },
+      "outputExample": {
+        "id": "item-003",
+        "name": "New Item",
+        "status": "pending"
+      }
+    }
+  ]
+}
